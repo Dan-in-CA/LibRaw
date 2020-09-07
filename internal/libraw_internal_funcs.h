@@ -290,13 +290,13 @@ it under the terms of the one of two licenses as you choose:
 	void        parse_x3f() {}
 	void        x3f_load_raw(){}
 #endif
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
 	void		rpi_load_raw8();
 	void		rpi_load_raw12();
 	void		rpi_load_raw14();
 	void		rpi_load_raw16();
 	void		parse_raspberrypi();
-#endif
+// #endif
 
 // CAM/RGB
     void        pseudoinverse (double (*in)[3], double (*out)[3], int size);

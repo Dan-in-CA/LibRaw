@@ -567,10 +567,10 @@ void LibRaw::GetNormalizedModel()
     if (strcasestr(model, "Google")) {
 		  setMakeFromIndex(LIBRAW_CAMERAMAKER_Google);
     }
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
 	else if(strcasestr(make,"RaspberryPi"))
 		setMakeFromIndex(LIBRAW_CAMERAMAKER_Broadcom);
-#endif
+// #endif
   }
   else if (makeIs(LIBRAW_CAMERAMAKER_Hasselblad) && is_Sony)
   {
@@ -1332,7 +1332,7 @@ void LibRaw::GetNormalizedModel()
   {
     if (makeIs(LIBRAW_CAMERAMAKER_Samsung))
     {
-      if ((ilm.LensMount == LIBRAW_MOUNT_Samsung_NX) && xmpdata && (strlen(xmpdata) > 9) &&
+      if ((ilm.LensMount == LIBRAW_MOUNT_Samsung_NX) && (strlen(xmpdata) > 9) &&
           (ps = strstr(xmpdata, "LensID=\"(")))
       {
         ilm.LensID = atoi(ps + 9);
@@ -1354,6 +1354,10 @@ void LibRaw::GetNormalizedModel()
     if (ilm.LensID == LIBRAW_LENS_NOT_SET) ilm.LensMount = LIBRAW_MOUNT_IL_UM;
     else ilm.LensMount = ilm.CameraMount;
     }
+
+  if (normalized_model[0] && !CM_found)
+    CM_found = adobe_coeff(maker_index, normalized_model);
+
 }
 
 void LibRaw::SetStandardIlluminants (unsigned makerIdx, const char* normModel) {

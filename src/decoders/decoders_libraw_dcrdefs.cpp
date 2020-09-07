@@ -148,7 +148,7 @@ void LibRaw::unpacked_load_raw_reversed()
   }
 }
 
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
 
 void LibRaw::rpi_load_raw8()
 {
@@ -282,4 +282,4 @@ void LibRaw::rpi_load_raw16()
 	if (sum[1] > sum[0]) filters = 0x4b4b4b4b;
 }
 
-#endif
+// #endif

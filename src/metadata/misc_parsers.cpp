@@ -45,11 +45,10 @@ void LibRaw::nikon_3700()
   {
     int bits;
     char t_make[12], t_model[15];
-    int t_maker_idx;
-  } table[] = {{0x00, "Pentax", "Optio 33WR", LIBRAW_CAMERAMAKER_Pentax},
-               {0x03, "Nikon", "E3200", LIBRAW_CAMERAMAKER_Nikon},
-               {0x32, "Nikon", "E3700", LIBRAW_CAMERAMAKER_Nikon},
-               {0x33, "Olympus", "C-740UZ", LIBRAW_CAMERAMAKER_Olympus}};
+  } table[] = {{0x00, "Pentax", "Optio 33WR"},
+               {0x03, "Nikon", "E3200"},
+               {0x32, "Nikon", "E3700"},
+               {0x33, "Olympus", "C-740UZ"}};
 
   fseek(ifp, 3072, SEEK_SET);
   fread(dp, 1, 24, ifp);
@@ -58,7 +57,6 @@ void LibRaw::nikon_3700()
     if (bits == table[i].bits)
     {
       strcpy(make, table[i].t_make);
-      maker_index = table[i].t_maker_idx;
       strcpy(model, table[i].t_model);
     }
 }
@@ -571,7 +569,7 @@ void LibRaw::get_timestamp(int reversed)
     timestamp = mktime(&t);
 }
 
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
 void LibRaw::parse_raspberrypi()
 {
 	//This structure is at offset 0xB0 from the 'BRCM' ident.
@@ -677,4 +675,4 @@ void LibRaw::parse_raspberrypi()
 		}
 	}
 }
-#endif
+// #endif

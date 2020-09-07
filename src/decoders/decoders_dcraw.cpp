@@ -1010,10 +1010,10 @@ void LibRaw::nokia_load_raw()
 
   rev = 3 * (order == 0x4949);
   dwide = (raw_width * 5 + 1) / 4;
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
   if (raw_stride)
 	  dwide = raw_stride;
-#endif
+// #endif
   data = (uchar *)malloc(dwide * 2);
   merror(data, "nokia_load_raw()");
   try
@@ -1035,14 +1035,14 @@ void LibRaw::nokia_load_raw()
   }
   free(data);
   maximum = 0x3ff;
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
   if (!strcmp(make, "OmniVision") ||
 	  !strcmp(make, "Sony") ||
 	  !strcmp(make, "RaspberryPi")) return;
-#else
+/* #else
   if (strncmp(make, "OmniVision", 10))
-	  return;
-#endif
+	  return; */
+// #endif
   row = raw_height / 2;
   FORC(width - 1)
   {

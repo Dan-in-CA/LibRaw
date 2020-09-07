@@ -662,14 +662,14 @@ void LibRaw::identify()
   }
   else if (!memcmp(head, "CI", 2))
     parse_cine();
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
   else if (!memcmp(head, "BRCM", 4)) {
 	fseek(ifp, 0, SEEK_SET);
 	strcpy(make, "RaspberryPi");
 	strcpy(model, "Pi");
 	parse_raspberrypi();
 	}
-#endif
+// #endif
   else if (!memcmp(head + 4, "ftypcrx ", 8))
   {
     int err;
@@ -752,12 +752,33 @@ void LibRaw::identify()
   if (make[0] == 0)
   {
     parse_jpeg(0);
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
 	if (!(strncmp(model, "ov", 2) && strncmp(model, "RP_", 3))) {
 		//Assume that this isn't a raw unless the header can be found
 		is_raw = 0;
-
-		if (!strncasecmp(model, "RP_imx", 6)) {
+	    if (!strncasecmp(model, "RP_testc",8) ||
+		    !strncasecmp(model, "RP_imx477",9)) {
+		  const long offsets[] = {
+				  //IMX477 offsets
+				  3375104,  //2028x1080 12bit
+				  4751360,  //2028x1520 12bit
+				  18711040, //4056x3040 12bit
+				  1015808,  //1012x760 10bit
+				  -1        //Marker for end of table
+		  };
+		  int offset_idx;
+		  for (offset_idx=0; offsets[offset_idx]!=-1; offset_idx++) {
+		    if(!fseek (ifp, -offsets[offset_idx], SEEK_END) &&
+			   fread (head, 1, 32, ifp) && !strncmp(head,"BRCM", 4)) {
+			  fseek(ifp, -32, SEEK_CUR);
+			  strcpy (make, "SonyRPF");
+			  black = (offset_idx == 3) ? 64 : 256;
+			  parse_raspberrypi();
+			  break;
+		    }
+		  }
+	    }
+		else if (!strncasecmp(model, "RP_imx", 6)) {
 			const long offsets[] = {
 				//IMX219 offsets
 				10270208, //8MPix 3280x2464
@@ -805,7 +826,7 @@ void LibRaw::identify()
 			}
 	  }
 	}// else is_raw = 0;
-#else
+/* #else
     fseek(ifp, 0, SEEK_END);
     int sz = ftell(ifp);
     if (!strncmp(model, "RP_imx219", 9) && sz >= 0x9cb600 &&
@@ -844,8 +865,8 @@ void LibRaw::identify()
       thumb_length = sz - 0x61b800 - 1;
     }
     else
-      is_raw = 0;
-#endif
+      is_raw = 0; */
+// #endif
   }
 
   // make sure strings are terminated
@@ -1153,10 +1174,7 @@ dng_skip:
       pixel_aspect < 0.1 || pixel_aspect > 10. ||
       raw_height > 64000)
     is_raw = 0;
-   if(raw_width <= left_margin || raw_height <= top_margin)
-       is_raw = 0;
-   if (dng_version && (tiff_samples < 1 || tiff_samples > 4))
-       is_raw = 0; // we do not handle DNGs with more than 4 values per pixel
+
 #ifdef NO_JASPER
   if (load_raw == &LibRaw::redcine_load_raw)
   {
@@ -1302,19 +1320,19 @@ void LibRaw::identify_process_dng_fields()
 
 						if (calidx[colidx] == sidx)
 						{
-							for (int i = 0; i < colors && i < 4; i++)
+							for (int i = 0; i < colors; i++)
 								FORCC
 								cc[i][c] = tiff_ifd[sidx].dng_color[colidx].calibration[i][c];
 						}
 
 						if (abidx == sidx)
-							for (int i = 0; i < colors && i < 4; i++)
+							for (int i = 0; i < colors; i++)
 								FORCC cc[i][c] *= tiff_ifd[sidx].dng_levels.analogbalance[i];
 						int j;
-						FORCC for (int i = 0; i < 3; i++) 
-                            for (cam_xyz[c][i] = j = 0; j < colors && j < 4; j++)
-							    cam_xyz[c][i] +=
-							        cc[c][j] * cm[j][i]; // add AsShotXY later * xyz[i];
+						FORCC for (int i = 0; i < 3; i++) for (cam_xyz[c][i] = j = 0;
+							j < colors; j++)
+							cam_xyz[c][i] +=
+							cc[c][j] * cm[j][i]; // add AsShotXY later * xyz[i];
 						cam_xyz_coeff(cmatrix, cam_xyz);
 					}
 				}
@@ -1508,7 +1526,7 @@ void LibRaw::identify_process_dng_fields()
 			int i = 6;
 			for (unsigned row = 0; row < imgdata.color.dng_levels.dng_cblack[4]; row++)
 				for (unsigned col = 0; col < imgdata.color.dng_levels.dng_cblack[5]; col++)
-					for (unsigned c = 0; c < tiff_samples && c < 4; c++)
+					for (unsigned c = 0; c < tiff_samples; c++)
 					{
 						csum[c] += imgdata.color.dng_levels.dng_cblack[i];
 						ccount[c]++;

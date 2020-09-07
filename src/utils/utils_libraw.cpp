@@ -199,19 +199,20 @@ unsigned LibRaw::capabilities()
 #endif
 #ifdef USE_DNGSDK
   ret |= LIBRAW_CAPS_DNGSDK;
+#endif
 #ifdef USE_GPRSDK
   ret |= LIBRAW_CAPS_GPRSDK;
 #endif
 #ifdef LIBRAW_WIN32_UNICODEPATHS
   ret |= LIBRAW_CAPS_UNICODEPATHS;
 #endif
-#endif
+//#endif
 #ifdef USE_X3FTOOLS
   ret |= LIBRAW_CAPS_X3FTOOLS;
 #endif
-#ifdef USE_6BY9RPI
+// #ifdef USE_6BY9RPI
   ret |= LIBRAW_CAPS_RPI6BY9;
-#endif
+// #endif
   return ret;
 }
 
